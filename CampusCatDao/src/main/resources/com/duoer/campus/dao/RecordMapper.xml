@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duoer.campus.dao.RecordMapper">
+    <resultMap id="fRecordRM" type="com.duoer.campus.entity.FeedingRecord">
+        <id column="record_id" property="recordId"/>
+        <result column="cat_id" property="catId"/>
+        <result column="cat_name" property="catName"/>
+        <result column="location_id" property="locationId"/>
+        <result column="record_time" property="recordTime"/>
+        <result column="last_update" property="lastUpdate"/>
+        <result column="former_id" property="formerId"/>
+    </resultMap>
+
+    <resultMap id="aRecordRM" type="com.duoer.campus.entity.AppearanceRecord">
+        <id column="record_id" property="recordId"/>
+        <result column="cat_id" property="catId"/>
+        <result column="cat_name" property="catName"/>
+        <result column="location_id" property="locationId"/>
+        <result column="record_time" property="recordTime"/>
+        <result column="last_update" property="lastUpdate"/>
+        <result column="former_id" property="formerId"/>
+    </resultMap>
+
+    <update id="updateFeedingRecord">
+        update feeding_record
+        <set>
+            <if test="catId != null">
+                cat_id = #{catId},
+            </if>
+            <if test="locationId != null">
+                location_id = #{locationId},
+            </if>
+            <if test="recordTime != null">
+                record_time = #{recordTime},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+            <if test="lastUpdate != null">
+                last_update = #{lastUpdate}
+            </if>
+            <if test="lastUpdate == null">
+                last_update = NOW()
+            </if>
+        </set>
+        where record_id = #{recordId}
+    </update>
+
+    <update id="updateAppearanceRecord">
+        update appearance_record
+        <set>
+            <if test="catId != null">
+                cat_id = #{catId},
+            </if>
+            <if test="locationId != null">
+                location_id = #{locationId},
+            </if>
+            <if test="recordTime != null">
+                record_time = #{recordTime},
+            </if>
+            <if test="lastUpdate != null">
+                last_update = #{lastUpdate}
+            </if>
+            <if test="lastUpdate == null">
+                last_update = NOW()
+            </if>
+        </set>
+        where record_id = #{recordId}
+    </update>
+
+    <delete id="deleteFeedingRecordsByIds">
+        /* use forEach */
+        delete from feeding_record where record_id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteFeedingRecordsByIdsTmp">
+        /* use forEach */
+        delete from feeding_record_tmp where record_id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteAppearanceRecordsByIds">
+        /* use forEach */
+        delete from appearance_record where record_id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteAppearanceRecordsByIdsTmp">
+        delete from appearance_record_tmp where record_id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

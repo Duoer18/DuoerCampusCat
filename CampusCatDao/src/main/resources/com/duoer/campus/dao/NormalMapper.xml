@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duoer.campus.dao.NormalMapper">
+    <resultMap id="colorRM" type="com.duoer.campus.entity.Color">
+        <id column="color_id" property="colorId"/>
+    </resultMap>
+    <resultMap id="categoryRM" type="com.duoer.campus.entity.Category">
+        <id column="category_id" property="categoryId"/>
+    </resultMap>
+    <resultMap id="characterRM" type="com.duoer.campus.entity.CatCharacter">
+        <id column="character_id" property="characterId"/>
+    </resultMap>
+    <resultMap id="locationRM" type="com.duoer.campus.entity.Location">
+        <id column="location_id" property="locationId"/>
+    </resultMap>
+</mapper>

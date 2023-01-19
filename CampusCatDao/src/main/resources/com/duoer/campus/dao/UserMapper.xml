@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duoer.campus.dao.UserMapper">
+
+    <update id="updateUser">
+        update user_info
+        <set>
+            <if test="#{password} != null">
+                password = #{password},
+            </if>
+            <if test="#{status} != null">
+                status = #{status}
+            </if>
+        </set>
+    </update>
+</mapper>

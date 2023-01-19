@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duoer.campus.dao.CatMapper">
+    <resultMap id="catRM" type="com.duoer.campus.entity.Cat">
+        <id column="cat_id" property="catId"/>
+        <result column="cat_name" property="catName"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="color_id" property="colorId"/>
+        <result column="character_id" property="characterId"/>
+        <result column="location_id" property="locationId"/>
+        <result column="record_count" property="recordCount"/>
+    </resultMap>
+
+    <update id="updateCat">
+        /* use if and set tag */
+        update cat
+        <set>
+            <if test="catName != null">
+                cat_name = #{catName},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="colorId != null">
+                color_id = #{colorId},
+            </if>
+            <if test="characterId != null">
+                character_id = #{characterId},
+            </if>
+            <if test="locationId != null">
+                location_id = #{locationId}
+            </if>
+        </set>
+        where cat_id = #{catId}
+    </update>
+
+    <select id="randomSelect" resultType="com.duoer.campus.entity.Cat">
+        /* use if */
+        select * from cat
+        <where>
+            <if test="catId != null">
+                cat_id = #{catId},
+            </if>
+            <if test="catName != null">
+                cat_name = #{catName},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="colorId != null">
+                color_id = #{colorId},
+            </if>
+            <if test="characterId != null">
+                character_id = #{characterId},
+            </if>
+            <if test="locationId != null">
+                location_id = #{locationId}
+            </if>
+        </where>
+    </select>
+</mapper>
