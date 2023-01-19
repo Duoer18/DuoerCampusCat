@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=0.45, user-scalable=yes">
+    <title>注册</title>
+    <link href="/CampusCat/css/register.css" rel="stylesheet">
+</head>
+<body>
+<div id="loginDiv">
+    <form action="#" method="post" style="margin-left: 0.5%" id="form">
+        <h1 id="loginMsg">欢迎注册</h1>
+        <p> <label for="username">用户名</label> <input id="username" name="username" v-model="formData.username" @blur="check" type="text"></p>
+        <span id="e" v-if="status.code === 20000">用户名已存在</span>
+
+        <p> <label for="password">密码</label> &nbsp;&nbsp; <input id="password" name="password" v-model="formData.password" type="password"></p>
+
+        <div id="subDiv">
+            <input type="button" class="button" @click="submit" value="注册  ">
+            <br><br>
+            <a href="/CampusCat/login">已有帐号？点击登录</a>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+<script src="/CampusCat/js/userMsg.min.js"></script>
+<script>
+    new Vue({
+        el: '#loginDiv',
+        data: {
+            formData: {
+                username: '',
+                password: ''
+            },
+            status: {}
+        },
+        methods: {
+            async check() {
+                this.status = (await myAxios.post('/users/checkExist', this.formData)).data;
+            },
+            async submit() {
+                this.status = (await myAxios.post('/users/register', this.formData)).data;
+                if (this.status.code === 20001) {
+                    location.href = '/CampusCat/login';
+                } else if (this.status.code !== 20000) {
+                    alert("错误：" + this.status.msg + "\n错误代码：" + this.status.code);
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

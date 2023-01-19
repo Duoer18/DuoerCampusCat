@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=0.45, user-scalable=yes">
+    <title></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        table {
+            caption-side: top;
+        }
+    </style>
+</head>
+<body>
+<h2 id="headText" style="margin-left: 0.5%;margin-top: 0.3%"></h2>
+<hr>
+
+<div id="app">
+    <input type="button" class="btn btn-primary btn-sm"
+           onclick="location.href = '/CampusCat/home'" value="回主页" style="margin-left: 0.5%">
+    <input type="button" class="btn btn-primary btn-sm"
+           onclick="location.href = '/CampusCat/catsList'" value="查看所有猫咪">
+    <input type="button" class="btn btn-primary btn-sm"
+           onclick="location.href = '/CampusCat/userRecords'" value="查看我的记录">
+    <hr>
+    <div id="feedingDiv">
+        <input type="button" class="btn btn-primary btn-sm" style="margin-left: 0.5%"
+               onclick="location.href = '/CampusCat/records?type=feeding'" value="查看全部投喂记录">
+        <input type="button" id="addBtnF" value="新增" @click="add('feeding')" class="btn btn-primary btn-sm">
+        <table id="feedingTable" class="table table-striped">
+            <caption style="margin-left: 0.5%">全部投喂记录</caption>
+            <tr>
+                <th>编号</th>
+                <th>猫咪</th>
+                <th>操作用户</th>
+                <th>投喂位置</th>
+                <th>投喂时间</th>
+                <th>食物</th>
+                <th>上次更新时间</th>
+                <th v-if="user.admin">操作</th>
+            </tr>
+            <tr v-for="feeding in feedings.data">
+                <td>{{feeding.recordId}}</td>
+                <td>{{feeding.catName}}</td>
+                <td>{{feeding.username}}</td>
+                <td>{{feeding.location}}</td>
+                <td>{{feeding.recordTime}}</td>
+                <td>{{feeding.remarks}}</td>
+                <td>{{feeding.lastUpdate}}</td>
+                <td v-if="user.admin">
+                    <input type="button" class="btn btn-primary btn-sm" value="修改"
+                           @click="upd('feeding', feeding.recordId)">
+                    <input type="button" class="btn btn-primary btn-sm" value="删除"
+                           @click="del('feeding', feeding.recordId)">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <hr>
+    <div id="appearanceDiv">
+        <input type="button" class="btn btn-primary btn-sm" style="margin-left: 0.5%"
+               onclick="location.href = '/CampusCat/records?type=appearance'" value="查看全部出现记录">
+        <input type="button" id="addBtnA" value="新增" @click="add('appearance')" class="btn btn-primary btn-sm">
+        <table id="appearanceTable" class="table table-striped">
+            <caption style="margin-left: 0.5%">全部出现记录</caption>
+            <tr>
+                <th>编号</th>
+                <th>猫咪</th>
+                <th>操作用户</th>
+                <th>出现位置</th>
+                <th>出现时间</th>
+                <th>上次更新时间</th>
+                <th v-if="user.admin">操作</th>
+            </tr>
+            <tr v-for="appearance in appearances.data">
+                <td>{{appearance.recordId}}</td>
+                <td>{{appearance.catName}}</td>
+                <td>{{appearance.username}}</td>
+                <td>{{appearance.location}}</td>
+                <td>{{appearance.recordTime}}</td>
+                <td>{{appearance.lastUpdate}}</td>
+                <td v-if="user.admin">
+                    <input type="button" class="btn btn-primary btn-sm" value="修改"
+                           @click="upd('appearance', appearance.recordId)">
+                    <input type="button" class="btn btn-primary btn-sm" value="删除"
+                           @click="del('appearance', appearance.recordId)">
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+<script src="/CampusCat/js/userMsg.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            user: {},
+            catId: window.location.href.split('=')[1],
+            cat: {},
+            feedings: {},
+            appearances: {}
+        },
+        async mounted() {
+            this.user = await userMsg('');
+            this.cat = (await myAxios.get('/cats/' + this.catId)).data;
+            if (this.cat.code !== 20021) {
+                alert("错误：" + this.cat.msg + "\n错误代码：" + this.cat.code);
+            }
+            document.title = '猫咪 ' + this.cat.data.catName + ' 的全部记录';
+            await this.flush();
+        },
+        methods: {
+            async flush() {
+                this.feedings = (await myAxios.get('/feedings/cat/' + this.catId)).data;
+                if (this.feedings.code !== 20021) {
+                    alert("错误：" + this.feedings.msg + "\n错误代码：" + this.feedings.code);
+                }
+                this.appearances = (await myAxios.get('/appearances/cat/' + this.catId)).data;
+                if (this.appearances.code !== 20021) {
+                    alert("错误：" + this.appearances.msg + "\n错误代码：" + this.appearances.code);
+                }
+            },
+            add(recordType) {
+                location.href = '/CampusCat/addRecord?type=' + recordType + '&catId=' + this.catId;
+            },
+            upd(recordType, id) {
+                location.href = '/CampusCat/updateRecord?id=' + id + '&type=' + recordType;
+            },
+            async del(recordType, id) {
+                let d = (await myAxios.delete('/' + recordType + 's', {data:[id]})).data;
+                let status = d.code;
+                if (status !== 20041) {
+                    alert("错误：" + d.msg + "\n错误代码：" + d.code);
+                }
+                await this.flush();
+            }
+        }
+    });
+</script>
+</body>
+</html>

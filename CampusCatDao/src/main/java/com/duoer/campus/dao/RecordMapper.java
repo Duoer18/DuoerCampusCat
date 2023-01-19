@@ -6,11 +6,9 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface RecordMapper {
     @Select("select * from feeding_view order by record_id")
     @ResultMap("fRecordRM")

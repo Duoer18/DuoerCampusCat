@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=0.45, user-scalable=yes">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+    <script src="/CampusCat/js/userMsg.min.js"></script>
+    <title>猫咪添加审核</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        table {
+            caption-side: top;
+        }
+    </style>
+</head>
+<body>
+<h2 id="headText" style="margin-left: 0.5%;margin-top: 0.3%"></h2>
+<hr>
+<div id="app">
+    <input type="button" class="btn btn-primary btn-sm"
+           onclick="location.href = '/CampusCat/home'" value="回主页" style="margin-left: 0.5%">
+    <input type="button" class="btn btn-primary btn-sm"
+           onclick="window.open('/CampusCat/catsList')" value="查看所有猫咪">
+    <input type="button" class="btn btn-primary btn-sm" id="flush" @click="flush" value="刷新">
+    <hr>
+    <div id="opSuccess" v-if="success" style="margin-left: 0.5%">
+        <p>操作已成功！</p>
+        <hr>
+    </div>
+    <div id="opFailed" v-if="failed" style="margin-left: 0.5%">
+        <p>其他管理员已完成审核！</p>
+        <hr>
+    </div>
+    <table class="table table-striped" id="catTbl">
+        <caption style="margin-left: 0.5%">所有猫咪记录</caption>
+        <tr>
+            <th>临时编号</th>
+            <th>名字</th>
+            <th>品种</th>
+            <th>颜色</th>
+            <th>性格</th>
+            <th>常出现位置</th>
+            <th>操作</th>
+        </tr>
+        <tr v-for="cat in cats.data">
+            <td>{{cat.catId}}</td>
+            <td>{{cat.catName}}</td>
+            <td>{{cat.category}}</td>
+            <td>{{cat.color}}</td>
+            <td>{{cat.character}}</td>
+            <td>{{cat.location}}</td>
+            <td>
+                <input type="button" @click="pas(cat.catId)" class="btn btn-primary btn-sm" value="通过">
+                <input type="button" @click="rej(cat.catId)" class="btn btn-primary btn-sm" value="驳回">
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            cats: {},
+            success: false,
+            failed: false
+        },
+        async mounted() {
+            await userMsg('');
+            this.cats = (await myAxios.get('/admin/cats')).data;
+            if (this.cats.code !== 20021) {
+                alert("错误：" + this.cats.msg + "\n错误代码：" + this.cats.code);
+            }
+        },
+        methods: {
+            async flush() {
+                this.cats = (await myAxios.get('/admin/cats')).data;
+                if (this.cats.code !== 20021) {
+                    alert("错误：" + this.cats.msg + "\n错误代码：" + this.cats.code);
+                }
+                this.success = this.failed = false;
+            },
+            async pas(id) {
+                let i = (await myAxios.get('/admin/cats/' + id)).data;
+                if (i.code === 20031) {
+                    this.success = true;
+                    this.failed = false;
+                } else if (i.code === 20030) {
+                    this.success = false;
+                    this.failed = true;
+                } else {
+                    this.success = this.failed = false;
+                    alert("错误：" + i.msg + "\n错误代码：" + i.code);
+                }
+                this.cats = (await myAxios.get('/admin/cats')).data;
+                if (this.cats.code !== 20021) {
+                    alert("错误：" + this.cats.msg + "\n错误代码：" + this.cats.code);
+                }
+            },
+            async rej(id) {
+                let i = (await myAxios.delete('/admin/cats/tmp/' + id)).data;
+                if (i.code === 20041) {
+                    this.success = true;
+                    this.failed = false;
+                } else {
+                    if (i.code !== 20040) {
+                        alert("错误：" + i.msg + "\n错误代码：" + i.code);
+                    }
+                    this.success = false;
+                    this.failed = true;
+                }
+                this.cats = (await myAxios.get('/admin/cats')).data;
+                if (this.cats.code !== 20021) {
+                    alert("错误：" + this.cats.msg + "\n错误代码：" + this.cats.code);
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

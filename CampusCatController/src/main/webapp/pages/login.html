@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=0.45, user-scalable=yes">
+    <title>登录</title>
+    <link href="/CampusCat/css/login.css" rel="stylesheet">
+</head>
+<body>
+<div id="loginDiv">
+    <form action="#" method="post" style="margin-left: 0.5%" id="form">
+        <h1 id="loginMsg">你好，请登录</h1>
+        <h5 id="al" style="text-align: center" v-if="status.code === 20012 || user.username !== 'visitor' && status.code !== 20010">
+            您当前已登录其他账号 {{user.username}}，请先注销该账号！
+        </h5>
+        <h5 id="wr" style="text-align: center" v-if="status.code === 20010">
+            用户名或密码错误！
+        </h5>
+        <p>
+            <label for="username">用户名</label>
+            <input id="username" name="username" type="text" v-model="formData.username">
+        </p>
+
+        <p>
+            <label for="password">密码</label> &nbsp;&nbsp;
+            <input id="password" name="password" type="password" v-model="formData.password">
+        </p>
+
+        <p id="rememberC">
+            <input type="checkbox" name="remember" value="1" id="remember">
+            <label for="remember" id="rememberL">记住我</label>
+        </p>
+
+        <div id="subDiv">
+            <input type="button" class="button" id="loginBtn" value="登录  " @click="login">
+            <input type="button" class="button" id="reset" value="重置  " @click="reset">&nbsp;&nbsp;&nbsp;<br><br>
+            <a href="/CampusCat/register">没有账号？点击注册</a>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+<script src="/CampusCat/js/userMsg.min.js"></script>
+<script>
+    new Vue({
+        el: '#loginDiv',
+        data: {
+            formData: {
+                username: '',
+                password: ''
+            },
+            user: {},
+            remember: '',
+            status: {}
+        },
+        async mounted() {
+            let u = (await myAxios.get("/users")).data;
+            if (u.code === 20021) {
+                this.user = u.data;
+            } else {
+                alert("错误：" + u.msg + "\n错误代码：" + u.code);
+                this.user = {
+                    username: "visitor",
+                    admin: false
+                };
+            }
+            let acc = (await myAxios.get("/users/acc")).data;
+            if (acc.code !== 20021) {
+                this.formData = {
+                    username: "",
+                    password: ""
+                };
+                alert("错误：" + acc.msg + "\n错误代码：" + acc.code);
+            } else {
+                this.formData = {
+                    username: acc.data.username,
+                    password: acc.data.password
+                };
+            }
+        },
+        methods: {
+            async login() {
+                let remember = document.getElementById('remember').checked;
+                this.formData.status = remember ? -11 : -10;
+                this.status = (await myAxios.post('/users/login', this.formData)).data;
+                if (this.status.code === 20011) {
+                    location.href = '/CampusCat/home';
+                } else if (this.status.code !== 20010) {
+                    alert("错误：" + this.status.msg + "\n错误代码：" + this.status.code);
+                }
+            },
+            reset() {
+                this.formData.username = this.formData.password = '';
+            }
+        }
+    });
+</script>
+</body>
+</html>

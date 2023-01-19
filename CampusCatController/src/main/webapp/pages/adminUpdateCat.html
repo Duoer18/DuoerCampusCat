@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=0.45, user-scalable=yes">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+    <script src="/CampusCat/js/userMsg.min.js"></script>
+    <title>猫咪信息修改</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<h2 id="headText" style="margin-left: 0.5%;margin-top: 0.3%"></h2>
+<hr>
+<div id="app">
+    <input type="button" class="btn btn-primary btn-sm"
+           onclick="location.href = '/CampusCat/home'" value="回主页" style="margin-left: 0.5%">
+    <input type="button" class="btn btn-primary btn-sm" onclick="window.history.back()" value="后退">
+    <hr>
+    <form id="catAdd" action="#" method="post" style="margin-left: 0.5%">
+        <label for="catName">猫咪名</label>
+        <input type="text" id="catName" v-bind:value="oldCat.data.catName" readonly name="catName"><br>
+
+        <label for="categoryIds">品种</label>
+        <select name="categoryId" id="categoryIds" v-model="oldCat.data.categoryId">
+            <option v-for="category in categories.data" v-bind:value="category.categoryId">{{category.category}}</option>
+        </select><br>
+
+        <label for="colorIds">颜色</label>
+        <select name="colorId" id="colorIds" v-model="oldCat.data.colorId">
+            <option v-for="color in colors.data" v-bind:value="color.colorId">{{color.color}}</option>
+        </select><br>
+
+        <label for="characterIds">性格</label>
+        <select name="characterId" id="characterIds" v-model="oldCat.data.characterId">
+            <option v-for="character in characters.data"
+                    v-bind:value="character.characterId">{{character.character}}</option>
+        </select><br>
+
+        <label for="locationIds">常出现位置</label>
+        <select name="locationId" id="locationIds" v-model="oldCat.data.locationId">
+            <option v-for="location in locations.data" v-bind:value="location.locationId">{{location.location}}</option>
+        </select><br>
+
+        <input type="button" class="btn btn-primary btn-sm" id="submit" @click="submit" value="提交">
+    </form>
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            catIdParam: window.location.href.split('=')[1],
+            oldCat: {},
+            ready: 0,
+            categories: {},
+            colors: {},
+            characters: {},
+            locations: {}
+        },
+        async mounted() {
+            await userMsg('');
+            this.oldCat = (await myAxios.get('/cats/' + this.catIdParam)).data;
+            if (this.oldCat.code !== 20021) {
+                alert("错误：" + this.oldCat.msg + "\n错误代码：" + this.oldCat.code);
+            }
+            this.categories = (await myAxios.get('/categories')).data;
+            if (this.categories.code !== 20021) {
+                alert("错误：" + this.categories.msg + "\n错误代码：" + this.categories.code);
+            }
+            this.colors = (await myAxios.get('/colors')).data;
+            if (this.colors.code !== 20021) {
+                alert("错误：" + this.colors.msg + "\n错误代码：" + this.colors.code);
+            }
+            this.characters = (await myAxios.get('/characters')).data;
+            if (this.characters.code !== 20021) {
+                alert("错误：" + this.characters.msg + "\n错误代码：" + this.characters.code);
+            }
+            this.locations = (await myAxios.get('/locations')).data;
+            if (this.locations.code !== 20021) {
+                alert("错误：" + this.locations.msg + "\n错误代码：" + this.locations.code);
+            }
+            this.ready += 4;
+        },
+        methods: {
+            async submit() {
+                if (this.ready === 4) {
+                    let upd = (await myAxios.put("/admin/cats", this.oldCat.data)).data;
+                    if (upd.code !== 20051) {
+                        alert("错误：" + upd.msg + "\n错误代码：" + upd.code);
+                    } else {
+                        location.href = "/CampusCat/catsList";
+                    }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

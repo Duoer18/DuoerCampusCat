@@ -4,9 +4,7 @@ import com.duoer.campus.entity.User;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface UserMapper {
     // select username and status
     @Select("select username, status from user_info where username = #{username} and password = #{password}")

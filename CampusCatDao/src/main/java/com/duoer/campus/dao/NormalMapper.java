@@ -6,11 +6,9 @@ import com.duoer.campus.entity.Color;
 import com.duoer.campus.entity.Location;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface NormalMapper {
     @Select("select * from color order by color_id")
     @ResultMap("colorRM")
