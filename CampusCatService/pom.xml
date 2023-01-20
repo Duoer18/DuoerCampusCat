@@ -8,6 +8,13 @@
     <artifactId>CampusCatService</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <parent>
+        <groupId>com.duoer.campus</groupId>
+        <artifactId>CampusCat</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../CampusCat</relativePath>
+    </parent>
+
     <dependencies>
         <dependency>
             <groupId>com.duoer.campus</groupId>
@@ -18,13 +25,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>5.2.10.RELEASE</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>5.2.10.RELEASE</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
